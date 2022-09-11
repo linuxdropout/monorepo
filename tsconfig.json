@@ -1,0 +1,45 @@
+{
+  "buildOptions": {
+    "incremental": true,
+    "assumeChangesOnlyAffectDirectDependencies": true
+  },
+  "compilerOptions": {
+    "incremental": true,
+    "composite": true,
+    "target": "ESNext",
+    "moduleDetection": "auto",
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "noEmit": true,
+    "rootDirs": [
+      "scripts"
+    ],
+    "baseUrl": "./",
+    "allowUmdGlobalAccess": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "preserveSymlinks": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
+  }
+}
