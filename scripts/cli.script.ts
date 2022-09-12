@@ -219,6 +219,47 @@ module.exports = { ...baseConfig }
   fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`)
 }
 
+export declare type SetNamespaceOpts = {
+  name: string
+}
+export function setNamespace(opts: SetNamespaceOpts, rootPath: string) {
+  if (!opts.name) {
+    throw new Error('name is required')
+  }
+
+  const rootPackageJsonPath = path.resolve(rootPath, 'package.json')
+  const rootJson = require(rootPackageJsonPath) as PackageJson
+
+  const existingPrefix = rootJson.name?.split('/').shift()
+  if (!existingPrefix?.startsWith('@')) {
+    throw new Error(`Expected existing prefix to match @*/*, instead found ${rootJson.name}`)
+  }
+
+  if (rootJson.workspaces?.length) {
+    for (const workspacePrefix of rootJson.workspaces) {
+      const workspacePath = workspacePrefix.split('/').map(v => v.replace(/\*/gi, '')).filter(v => v).join('/')
+      const dirPath = path.resolve(rootPath, workspacePath)
+      if (!fs.existsSync(dirPath)) continue
+      const stat = fs.lstatSync(dirPath)
+      if (!stat.isDirectory()) continue
+
+      const packages = fs.readdirSync(dirPath)
+      for (const packageName of packages) {
+        const packageJsonPath = path.resolve(dirPath, packageName, 'package.json')
+        if (!fs.existsSync(packageJsonPath)) continue
+        const packageJson = require(packageJsonPath) as PackageJson
+        if (packageJson.name?.startsWith(existingPrefix)) {
+          packageJson.name = `@${opts.name}${packageJson.name.slice(0, existingPrefix.length)}`
+        }
+        fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`)
+      }
+    }
+  }
+
+  rootJson.name = `@${opts.name}${rootJson?.name?.slice(existingPrefix.length)}`
+  fs.writeFileSync(rootPackageJsonPath, `${JSON.stringify(rootJson, null, 2)}\n`)
+}
+
 function main(...args: string[]) {
   const templatePath = process.env.TEMPLATE_PATH || TEMPLATE_PATH
   const templates = fs.existsSync(templatePath) ? fs.readdirSync(templatePath) : []
@@ -231,6 +272,17 @@ function main(...args: string[]) {
 
   yargs(args)
     .scriptName('yarn cli')
+    .command(
+      ['namespace <name>', 'n <name>'],
+      'set top level namespace',
+      config => config
+        .positional('name', {
+          desc: 'namespace (aka: @namespace/...)',
+          type: 'string',
+        })
+        .demandOption('name'),
+      argv => setNamespace(argv, rootPath),
+    )
     .command(
       ['workspace <name>', 'w <name>'],
       'create a new workspace',
