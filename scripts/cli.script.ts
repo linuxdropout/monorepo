@@ -34,6 +34,10 @@ declare type PackageJson = {
     [key: string]: string
   }
 }
+declare type VSCodeSettings = {
+  'typescript.tsdk'?: string
+  'eslint.nodePath'?: string
+}
 
 function getDefault(
   options: string[],
@@ -116,6 +120,20 @@ export function ensureWorkspaceExists(
   }
 }
 
+export function initFileIfNotExists(
+  rootPath: string,
+  fileName: string,
+  init: () => string | null,
+) {
+  const targetPath = path.resolve(rootPath, fileName)
+  if (fs.existsSync(targetPath)) return
+  const res = init()
+  if (res === null) return
+
+  console.log(`writing to ${targetPath}`)
+  fs.writeFileSync(targetPath, res)
+}
+
 export declare type CreatePackageOpts = {
   name: string
   template?: string | undefined
@@ -196,25 +214,49 @@ export function createPackage(opts: CreatePackageOpts, rootPath: string) {
     }
   }
 
-  const eslintPath = path.resolve(packagePath, '.eslintrc.js')
-  if (!fs.existsSync(eslintPath)) {
+  initFileIfNotExists(packagePath, '.eslintrc.js', () => {
     const rootEslintPath = process.env.ROOT_ESLINT_PATH || ROOT_ESLINT_PATH
-    if (rootEslintPath) {
-      if (!packageJson.scripts) {
-        packageJson.scripts = {}
-      }
-      if (!packageJson.scripts.lint) packageJson.scripts.lint = 'yarn eslint . --ext=ts,tsx'
-      if (!packageJson.scripts['lint:fix']) packageJson.scripts['lint:fix'] = 'yarn eslint . --ext=ts,tsx --fix'
-      const relativePath = path.relative(packagePath, rootEslintPath).split('.').slice(0, -1).join('.')
-      fs.writeFileSync(
-        eslintPath,
-        `const baseConfig = require('${relativePath}')
+    if (!rootEslintPath) return null
+
+    if (!packageJson.scripts) packageJson.scripts = {}
+    if (!packageJson.scripts.lint) packageJson.scripts.lint = 'yarn eslint . --ext=ts,tsx'
+    if (!packageJson.scripts['lint:fix']) packageJson.scripts['lint:fix'] = 'yarn eslint . --ext=ts,tsx --fix'
+    const relativePath = path.relative(packagePath, rootEslintPath).split('.').slice(0, -1).join('.')
+    return `const baseConfig = require('${relativePath}')
 
 module.exports = { ...baseConfig }
-`,
-      )
+`
+  })
+
+  initFileIfNotExists(packagePath, '.editorconfig', () => {
+    const rootEditorConfigPath = path.resolve(rootPath, '.editorconfig')
+    if (!fs.existsSync(rootEditorConfigPath)) return null
+    return fs.readFileSync(rootEditorConfigPath, 'utf-8')
+  })
+
+  initFileIfNotExists(packagePath, '.vscode/settings.json', () => {
+    const rootEditorConfigPath = path.resolve(rootPath, '.vscode/settings.json')
+    if (!fs.existsSync(rootEditorConfigPath)) return null
+
+    const config = require(rootEditorConfigPath) as VSCodeSettings
+    if (config['eslint.nodePath']) {
+      const absPath = path.resolve(rootPath, config['eslint.nodePath'])
+      const relPath = path.relative(packagePath, absPath)
+      config['eslint.nodePath'] = relPath
     }
-  }
+
+    if (config['typescript.tsdk']) {
+      const absPath = path.resolve(rootPath, config['typescript.tsdk'])
+      const relPath = path.relative(packagePath, absPath)
+      config['typescript.tsdk'] = relPath
+    }
+
+    const vscodePath = path.resolve(packagePath, '.vscode')
+    if (!fs.existsSync(vscodePath)) {
+      fs.mkdirSync(vscodePath)
+    }
+    return JSON.stringify(config, null, 2)
+  })
 
   fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`)
 }
