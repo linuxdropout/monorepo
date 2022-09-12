@@ -2,7 +2,9 @@
   "name": "@monorepo/root",
   "packageManager": "yarn@3.2.3",
   "scripts": {
-    "cli": "yarn ts-node scripts/cli.script.ts"
+    "cli": "yarn ts-node scripts/cli.script.ts",
+    "test": "yarn workspaces foreach -vp run test",
+    "lint": "yarn workspaces foreach -vp run lint"
   },
   "devDependencies": {
     "@types/node": "^18.7.16",
