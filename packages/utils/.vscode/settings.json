@@ -15,9 +15,7 @@
     "**/yarn.lock": true,
     "**/.eslintrc.js": true,
     "**/.yarnrc.yml": true,
-    "**/license.txt": true,
-    "package.json": true,
-    "scripts": true
+    "**/license.txt": true
   },
   "files.exclude": {
     "**/.git": true,
@@ -35,13 +33,11 @@
     "**/yarn.lock": true,
     "**/.eslintrc.js": true,
     "**/.yarnrc.yml": true,
-    "**/license.txt": true,
-    "package.json": true,
-    "scripts": true
+    "**/license.txt": true
   },
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.tsdk": "../../.yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "eslint.nodePath": ".yarn/sdks",
+  "eslint.nodePath": "../../.yarn/sdks",
   "eslint.enable": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": true

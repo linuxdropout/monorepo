@@ -3,12 +3,23 @@
 import yargs from 'yargs'
 import fs from 'fs'
 import path from 'path'
+import {
+  CompilerOptions, BuildOptions, ProjectReference,
+} from 'typescript'
+
+declare type TsConfig = {
+  extends?: string
+  compilerOptions?: CompilerOptions
+  buildOptions?: BuildOptions
+  references?: ProjectReference[]
+}
 
 // process.env global variables (can be overridden with process.env.VARIABLE_NAME)
 export const DEFAULT_WORKSPACE = 'packages'
 export const TEMPLATE_PATH = path.resolve(__dirname, '../templates')
 export const ROOT_PATH = path.resolve(__dirname, '..')
 export const ROOT_ESLINT_PATH = path.resolve(__dirname, '../.eslintrc.js')
+export const NODE_LIBRARY_WORKSPACE = 'packages'
 
 // other global variables
 export const REQUIRED_PACKAGE_NAMES = new Set([
@@ -232,6 +243,33 @@ module.exports = { ...baseConfig }
     const rootEditorConfigPath = path.resolve(rootPath, '.editorconfig')
     if (!fs.existsSync(rootEditorConfigPath)) return null
     return fs.readFileSync(rootEditorConfigPath, 'utf-8')
+  })
+
+  initFileIfNotExists(packagePath, 'tsconfig.json', () => {
+    const rootEditorConfigPath = path.resolve(rootPath, 'tsconfig.json')
+    if (!fs.existsSync(rootEditorConfigPath)) return null
+
+    const targetPath = path.resolve(packagePath, 'tsconfig.json')
+    const namePrefix = rootJson.name?.split('/').shift()
+    const tsConfig: TsConfig = {
+      extends: path.relative(targetPath, rootEditorConfigPath),
+      buildOptions: {
+        incremental: true,
+        assumeChangesOnlyAffectDirectDependencies: true,
+      },
+      compilerOptions: {
+        paths: {
+          [`${namePrefix}/*`]: [
+            path.relative(
+              packagePath,
+              path.resolve(rootPath, process.env.NODE_LIBRARY_WORKSPACE || NODE_LIBRARY_WORKSPACE, '*'),
+            ),
+          ],
+        },
+      },
+    }
+
+    return `${JSON.stringify(tsConfig, null, 2)}\n`
   })
 
   initFileIfNotExists(packagePath, '.vscode/settings.json', () => {

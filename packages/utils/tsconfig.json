@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.json",
+  "buildOptions": {
+    "incremental": true,
+    "assumeChangesOnlyAffectDirectDependencies": true
+  },
+  "compilerOptions": {
+    "paths": {
+      "@monorepo/*": [
+        "../*"
+      ]
+    }
+  }
+}
