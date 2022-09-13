@@ -20,6 +20,7 @@
     "scripts": true
   },
   "files.exclude": {
+    "**/.husky": true,
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,
