@@ -1,0 +1,17 @@
+{
+  "watch": [
+    "../../packages",
+    "../../tsconfig.json",
+    "./src"
+  ],
+  "ignore": [
+    "dist/*"
+  ],
+  "exec": "yarn ts-node -T -r tsconfig-paths/register src/index.ts",
+  "env": {
+    "NODE_OPTIONS": "--enable-source-maps",
+    "NODE_ENV": "development",
+    "PORT": 8080
+  },
+  "ext": "ts,json"
+}
