@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "buildOptions": {
+    "incremental": true,
+    "assumeChangesOnlyAffectDirectDependencies": true
+  },
+  "compilerOptions": {
+    "lib": [
+      "ESNext"
+    ],
+    "paths": {
+      "@monorepo/*": [
+        "../../packages/*"
+      ]
+    }
+  }
+}
