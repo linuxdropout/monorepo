@@ -249,10 +249,9 @@ module.exports = { ...baseConfig }
     const rootEditorConfigPath = path.resolve(rootPath, 'tsconfig.json')
     if (!fs.existsSync(rootEditorConfigPath)) return null
 
-    const targetPath = path.resolve(packagePath, 'tsconfig.json')
     const namePrefix = rootJson.name?.split('/').shift()
     const tsConfig: TsConfig = {
-      extends: path.relative(targetPath, rootEditorConfigPath),
+      extends: path.relative(packagePath, rootEditorConfigPath),
       buildOptions: {
         incremental: true,
         assumeChangesOnlyAffectDirectDependencies: true,

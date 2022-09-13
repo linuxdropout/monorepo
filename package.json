@@ -16,6 +16,7 @@
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "latest",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-react": "^7.31.8",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "ts-node": "^10.9.1",
@@ -27,6 +28,7 @@
     "*.tsx": "eslint --fix --cache"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "templates/*"
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "buildOptions": {
+    "incremental": true,
+    "assumeChangesOnlyAffectDirectDependencies": true
+  },
+  "compilerOptions": {
+    "jsx": "react",
+    "target": "ES5",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "paths": {
+      "@monorepo/*": [
+        "../../packages/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}
