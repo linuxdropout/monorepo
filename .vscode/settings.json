@@ -16,7 +16,6 @@
     "**/.eslintrc.js": true,
     "**/.yarnrc.yml": true,
     "**/license.txt": true,
-    "package.json": true,
     "scripts": true
   },
   "files.exclude": {
@@ -37,7 +36,6 @@
     "**/.eslintrc.js": true,
     "**/.yarnrc.yml": true,
     "**/license.txt": true,
-    "package.json": true,
     "scripts": true
   },
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
